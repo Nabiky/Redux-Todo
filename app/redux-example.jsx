@@ -4,8 +4,8 @@ console.log('Starting redux example');
 
 var reducer = (state ={name: 'Anonymous'}, action) => {
   // state = state || {name: 'Anonymous'};
+ // console.log('New action', action);
 
-  // console.log('New action', action);
    switch (action.type) {
     case 'CHANGE_NAME':
      return {
@@ -17,14 +17,21 @@ var reducer = (state ={name: 'Anonymous'}, action) => {
   }
 };
 
-var store = redux.createStore(reducer); // this createStore method takes one argument
-                                       // which needs to be a pure function (reducer).
+var store = redux.createStore(reducer, redux.compose(
+  window.devToolsExtension ? window.devToolsExtension() : f => f
+));
 
-var currentState = store.getState();
-console.log('currentState 1', currentState);
+// Subscribe to changes
+var unsubscribe = store.subscribe(() => { // takes a function u would like to call everytime ur state changes
+  var state = store.getState();
 
-//A reducer takes your existent state and actions as arguments,
-//and return the new state
+  console.log('Name is', state.name);
+  // document.getElementById('app').innerHTML = state.name;
+
+});
+
+// var currentState = store.getState();
+// console.log('currentState 1', currentState);
 
 var action = {
   type: 'CHANGE_NAME',
@@ -32,4 +39,14 @@ var action = {
 };
 store.dispatch(action);
 
-console.log('Name should be andrew', store.getState());
+// unsubscribe(); // will unsubscribe Jennifer and Edward.
+store.dispatch({
+  type: 'CHANGE_NAME',
+  name: 'Jennifer'
+});
+
+
+store.dispatch({
+  type: 'CHANGE_NAME',
+  name: 'Edward'
+});

@@ -9,8 +9,7 @@ var stateDefault = {
 };
 
 var reducer = (state = stateDefault, action) => {
-
-   switch(action.type) {
+  switch(action.type) {
      case 'CHANGE_SEARCHTEXT':
          return {
             ...state,
@@ -18,12 +17,18 @@ var reducer = (state = stateDefault, action) => {
           };
           default:
             return state;
-
-        }
+         }
   };
 
-var store = redux.createStore(reducer);
-console.log('currentState', store.getState());
+var store = redux.createStore(reducer, redux.compose(window.devToolsExtension ? window.devToolsExtension() : f => f));
+
+var unsubscribe = store.subscribe(() => { // takes a function u would like to call everytime ur state changes
+  var state = store.getState();
+  document.getElementById('app').innerHTML = state.searchText;
+});
+
+
+// console.log('currentState', store.getState());
 
 var action = {
    type: 'CHANGE_SEARCHTEXT',
@@ -31,4 +36,15 @@ var action = {
 };
 
 store.dispatch(action);
- console.log('SearchText should be "Walk"', store.getState());
+
+store.dispatch({
+  type: 'CHANGE_SEARCHTEXT',
+  searchText: 'Eat'
+});
+
+//unsubscribe();
+store.dispatch({
+  type: 'CHANGE_SEARCHTEXT',
+  searchText: 'Dance'
+});
+ // console.log('SearchText should be "Walk"', store.getState());
